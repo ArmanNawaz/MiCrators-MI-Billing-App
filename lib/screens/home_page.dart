@@ -16,60 +16,88 @@ class MyHomePage extends StatelessWidget {
       child: ListView(
         children: [
           const SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: max(size.height * 0.25, 150),
-                width: max(size.width * 0.15, 150),
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('images/mi_logo.png'),
-                    fit: BoxFit.cover,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 100,
-                    )
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: max(size.width * 0.1, 100) + 25,
+                      width: max(size.width * 0.1, 100) + 25,
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        image: const DecorationImage(
+                          image: AssetImage('images/app_log.png'),
+                          fit: BoxFit.fitWidth,
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Color(0xffe35d00),
+                              blurRadius: 20,
+                              spreadRadius: 0.0,
+                              offset: Offset(20, 20),
+                              // blurStyle: BlurStyle.inner
+                              // spreadRadius: 0.2
+                          ),
+                          BoxShadow(
+                            color: Color(0xffff7500),
+                            blurRadius: 20,
+                            spreadRadius: 0.0,
+                            offset: Offset(-20, -20),
+                            // blurStyle: BlurStyle.inner
+                            // spreadRadius: 0.2
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(
+                          max(size.aspectRatio * 25, 10),
+                        ),
+                      ),
+                    ),
                   ],
-                  borderRadius: BorderRadius.circular(
-                    max(size.aspectRatio * 25, 10),
+                ),
+                const SizedBox(height: 40),
+                createInputFields(
+                    isPc: size.width >= 700, textInputSize: textInputSize),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, left: pd, right: pd),
+                  child: SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.black,
+                        elevation: 20.0,
+                        shadowColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        side: const BorderSide(
+                          color: Colors.black,
+                          width: 0.6,
+                        ),
+                      ),
+                      child: Container(
+                        width: 150.0,
+                        child: Center(
+                          child: Text(
+                            "Login",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 40),
-          createInputFields(
-              isPc: size.width >= 700, textInputSize: textInputSize),
-          const SizedBox(height: 20),
-          Padding(
-            padding: EdgeInsets.only(top: 10.0, left: pd, right: pd),
-            child: SizedBox(
-              height: 40,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.black,
-                  elevation: 20.0,
-                  shadowColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  side: const BorderSide(
-                    color: Colors.black,
-                    width: 0.6,
-                  ),
-                ),
-                child: const Text(
-                  "Login",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
+                SizedBox(height: 1.0,)
+              ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -113,9 +141,10 @@ Widget _textInput({String? text, double? width}) {
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
           labelText: text,
-          labelStyle: const TextStyle(color: Colors.black),
+          labelStyle: const TextStyle(color: Colors.grey),
           hintText: 'Enter Your ${text!}',
-          hintStyle: const TextStyle(color: Colors.black),
+          hintStyle: const TextStyle(
+              color: Colors.grey),
         ),
       ),
     ),
