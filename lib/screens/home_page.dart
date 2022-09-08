@@ -3,6 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mi_crators/constants.dart';
 
+List? inputs = List.filled(3, "");
+// inputs[0] = username, input[1] = password, input[2] = posId
+
 class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -16,7 +19,7 @@ class MyHomePage extends StatelessWidget {
       child: ListView(
         children: [
           const SizedBox(height: 50),
-          Container(
+          SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Column(
@@ -36,12 +39,12 @@ class MyHomePage extends StatelessWidget {
                         ),
                         boxShadow: const [
                           BoxShadow(
-                              color: Color(0xffe35d00),
-                              blurRadius: 20,
-                              spreadRadius: 0.0,
-                              offset: Offset(20, 20),
-                              // blurStyle: BlurStyle.inner
-                              // spreadRadius: 0.2
+                            color: Color(0xffe35d00),
+                            blurRadius: 20,
+                            spreadRadius: 0.0,
+                            offset: Offset(20, 20),
+                            // blurStyle: BlurStyle.inner
+                            // spreadRadius: 0.2
                           ),
                           BoxShadow(
                             color: Color(0xffff7500),
@@ -68,7 +71,9 @@ class MyHomePage extends StatelessWidget {
                   child: SizedBox(
                     height: 40,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        print(inputs);
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: Colors.black,
@@ -82,7 +87,7 @@ class MyHomePage extends StatelessWidget {
                           width: 0.6,
                         ),
                       ),
-                      child: Container(
+                      child: const SizedBox(
                         width: 150.0,
                         child: Center(
                           child: Text(
@@ -94,7 +99,7 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 1.0,)
+                const SizedBox(height: 1.0)
               ],
             ),
           ),
@@ -111,40 +116,67 @@ Widget createInputFields({bool? isPc, double? textInputSize}) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _textInput(text: "Username", width: textInputSize),
-            _textInput(text: "Password", width: textInputSize)
+            _textInput(
+                text: "Username",
+                width: textInputSize,
+                isPass: false,
+                inputValue: 0),
+            _textInput(
+                text: "Password",
+                width: textInputSize,
+                isPass: true,
+                inputValue: 1)
           ],
         ),
-        _textInput(text: "POS ID", width: textInputSize)
+        const SizedBox(height: 20),
+        _textInput(
+            text: "POS ID", width: textInputSize, isPass: false, inputValue: 2)
       ],
     );
   } else {
     return Column(
       children: [
-        _textInput(text: "Username", width: textInputSize),
-        _textInput(text: "Password", width: textInputSize),
-        _textInput(text: "POS ID", width: textInputSize)
+        _textInput(
+            text: "Username",
+            width: textInputSize,
+            isPass: false,
+            inputValue: 0),
+        _textInput(
+            text: "Password",
+            width: textInputSize,
+            isPass: true,
+            inputValue: 1),
+        _textInput(
+            text: "POS ID", width: textInputSize, isPass: false, inputValue: 2)
       ],
     );
   }
 }
 
-Widget _textInput({String? text, double? width}) {
+Widget _textInput(
+    {String? text, double? width, bool? isPass, int? inputValue}) {
   return Padding(
     padding: const EdgeInsets.only(top: 30.0),
     child: SizedBox(
       width: width,
       child: TextField(
-        onChanged: (value) {},
+        onChanged: (value) {
+          inputs![inputValue!] = value;
+        },
         style: const TextStyle(
             fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 0.6),
         keyboardType: TextInputType.text,
+        obscureText: isPass!,
         decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.yellow),
+              borderRadius: BorderRadius.circular(15)),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blue)),
           labelText: text,
           labelStyle: const TextStyle(color: Colors.grey),
           hintText: 'Enter Your ${text!}',
-          hintStyle: const TextStyle(
-              color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey),
         ),
       ),
     ),
