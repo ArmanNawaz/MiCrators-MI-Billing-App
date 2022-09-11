@@ -24,12 +24,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const Scaffold(
-        // appBar: AppBar(
-        //   title: Text("Hello"),
-        // ),
-        body: MyHomePage(),
-      ),
+      home: const MyHomePage(),
     );
   }
 }
