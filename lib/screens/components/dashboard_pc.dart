@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/screens/new_payment.dart';
 
 class DashPC extends StatelessWidget {
   const DashPC({Key? key}) : super(key: key);
@@ -65,7 +66,12 @@ class DashPC extends StatelessWidget {
                     SizedBox(
                       height: 45,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NewPayment()));
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.black,

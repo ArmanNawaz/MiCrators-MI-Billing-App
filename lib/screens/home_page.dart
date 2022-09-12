@@ -62,7 +62,7 @@ class MyHomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
                   createInputFields(
-                      isPc: size.width >= 700, textInputSize: textInputSize),
+                      isPc: size.width > 900, textInputSize: textInputSize),
                   const SizedBox(height: 20),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0, left: pd, right: pd),

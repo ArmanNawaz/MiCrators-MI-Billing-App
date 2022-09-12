@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/screens/components/dashboard_pc.dart';
+import 'package:mi_crators/screens/new_payment.dart';
 
 import 'components/dashboard_phone.dart';
 
@@ -15,7 +16,10 @@ class DashBoard extends StatelessWidget {
           ? null
           : FloatingActionButton(
               elevation: 10,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => NewPayment()));
+              },
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
               tooltip: "New Payment",
