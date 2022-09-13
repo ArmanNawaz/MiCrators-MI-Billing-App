@@ -70,7 +70,7 @@ class DashPC extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => NewPayment()));
+                                  builder: (context) => const NewPayment()));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,

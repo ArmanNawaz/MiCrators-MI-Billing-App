@@ -1,9 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-import '../../constants.dart';
-import '../new_payment.dart';
+import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/screens/new_payment.dart';
 
 class NewPaymentPc extends StatelessWidget {
   const NewPaymentPc({Key? key}) : super(key: key);
@@ -136,7 +135,7 @@ class NewPaymentPc extends StatelessWidget {
                         width: size.height - 350,
                         child: const Center(
                           child: Text(
-                            "Payment",
+                            "Add to Cart",
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                         ),

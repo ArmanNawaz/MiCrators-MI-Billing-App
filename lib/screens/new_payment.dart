@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/screens/checkout.dart';
+import 'package:mi_crators/screens/components/new_payment_pc.dart';
 import 'package:mi_crators/screens/components/new_payment_phone.dart';
-
-import 'components/new_payment_pc.dart';
 
 late Size size;
 late bool? isPc;
@@ -15,8 +15,11 @@ class NewPayment extends StatelessWidget {
     size = MediaQuery.of(context).size;
     isPc = size.width > 900;
     return Scaffold(
+        floatingActionButton: const CreateFloatingButton(),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniStartDocked,
         appBar: createAppBar(title: "New Payment", backButton: true),
-        body: isPc! ? NewPaymentPc() : NewPaymentPhone());
+        body: isPc! ? const NewPaymentPc() : const NewPaymentPhone());
   }
 }
 
@@ -31,7 +34,7 @@ class WarrantyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 20.0, left: 30),
+      padding: const EdgeInsets.only(top: 20.0, left: 30),
       child: GestureDetector(
         onTap: () {},
         child: Container(
@@ -86,6 +89,29 @@ class DetailsCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class CreateFloatingButton extends StatelessWidget {
+  const CreateFloatingButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 50,
+      width: isPc! ? size.width / 2 : size.width - 20,
+      child: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const Checkout()));
+        },
+        elevation: 20,
+        backgroundColor: primaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child:
+            const Text("Checkout : Rs.20000/-", style: TextStyle(fontSize: 20)),
+      ),
     );
   }
 }
