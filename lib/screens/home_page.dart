@@ -43,31 +43,34 @@ class MyHomePage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            height: max(size.width * 0.1, 100) + 25,
-                            width: max(size.width * 0.1, 100) + 25,
-                            decoration: BoxDecoration(
-                              color: primaryColor,
-                              image: const DecorationImage(
-                                image: AssetImage('images/app_log.png'),
-                                fit: BoxFit.fitWidth,
-                              ),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0xffe35d00),
-                                  blurRadius: 20,
-                                  spreadRadius: 0.0,
-                                  offset: Offset(20, 20),
+                          Hero(
+                            tag: "appIcon",
+                            child: Container(
+                              height: max(size.width * 0.1, 100) + 25,
+                              width: max(size.width * 0.1, 100) + 25,
+                              decoration: BoxDecoration(
+                                color: primaryColor,
+                                image: const DecorationImage(
+                                  image: AssetImage('images/app_log.png'),
+                                  fit: BoxFit.fitWidth,
                                 ),
-                                BoxShadow(
-                                  color: Color(0xffff7500),
-                                  blurRadius: 20,
-                                  spreadRadius: 0.0,
-                                  offset: Offset(-20, -20),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0xffe35d00),
+                                    blurRadius: 20,
+                                    spreadRadius: 0.0,
+                                    offset: Offset(20, 20),
+                                  ),
+                                  BoxShadow(
+                                    color: Color(0xffff7500),
+                                    blurRadius: 20,
+                                    spreadRadius: 0.0,
+                                    offset: Offset(-20, -20),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(
+                                  max(size.aspectRatio * 25, 10),
                                 ),
-                              ],
-                              borderRadius: BorderRadius.circular(
-                                max(size.aspectRatio * 25, 10),
                               ),
                             ),
                           ),
