@@ -18,6 +18,7 @@ dependencies:
   http:
   flutter_barcode_scanner: ^2.0.0
   code_scan: ^0.4.2
+  camera_windows: ^0.2.1+1
 
 dev_dependencies:
   flutter_test:

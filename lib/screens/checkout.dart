@@ -11,6 +11,6 @@ class Checkout extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: createAppBar(title: "Checkout", backButton: true),
-        body: size.width >= 900 ? const CheckoutPC() : const CheckoutPhone());
+        body: size.width >= 900 ? CheckoutPC() : CheckoutPhone());
   }
 }

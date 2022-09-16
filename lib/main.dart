@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/screens/splash_screen.dart';
 
-void main() async{
-
+void main() async {
   await Hive.initFlutter();
   Hive.openBox(local_data);
   Hive.openBox(prevTransactions);
@@ -33,7 +31,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }
