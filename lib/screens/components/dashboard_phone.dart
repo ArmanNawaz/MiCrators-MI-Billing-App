@@ -1,12 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
+import 'package:hive/hive.dart';
 import '../../constants.dart';
 import 'dashboard_pc.dart';
 
 class DashPhone extends StatelessWidget {
-  const DashPhone({Key? key}) : super(key: key);
+
+  final String name, paymentsAuthorised;
+
+  const DashPhone(this.name, this.paymentsAuthorised);
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +45,10 @@ class DashPhone extends StatelessWidget {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text("Arman Asim"),
+                  children: [
+                    Text(name),
                     Text("Employee"),
-                    Text("Payment Authorised: 40")
+                    Text("Payment Authorised: ${paymentsAuthorised}")
                   ],
                 )
               ],

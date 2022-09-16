@@ -39,6 +39,9 @@ class CheckoutPC extends StatelessWidget {
                             // color: const Color(0xffc7c7c7),
                             borderRadius: BorderRadius.circular(15),
                           ),
+
+                          // TODO: ADD CONTROLLER FOR CART
+
                           child: Column(
                             children: [
                               ItemCard(

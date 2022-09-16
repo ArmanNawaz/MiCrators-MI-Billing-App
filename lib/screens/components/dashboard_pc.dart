@@ -1,14 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/screens/new_payment.dart';
 
 class DashPC extends StatelessWidget {
-  const DashPC({Key? key}) : super(key: key);
+
+  final String name, authorisedPayments;
+
+  DashPC(this.name, this.authorisedPayments);
 
   @override
   Widget build(BuildContext context) {
+
+
+
     Size size = MediaQuery.of(context).size;
     return ListView(
       children: [
@@ -36,7 +43,7 @@ class DashPC extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Padding(
+                     const Padding(
                       padding:
                           EdgeInsets.only(top: 30.0, bottom: 30.0, right: 40),
                       child: VerticalDivider(
@@ -46,10 +53,10 @@ class DashPC extends StatelessWidget {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text("Arman Asim"),
+                      children: [
+                        Text("$name"),
                         Text("Employee"),
-                        Text("Payment Authorised: 40")
+                        Text("Payment Authorised: ${authorisedPayments}")
                       ],
                     )
                   ],

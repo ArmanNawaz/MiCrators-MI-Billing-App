@@ -6,20 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/controller/operator_controller.dart';
 import 'package:mi_crators/screens/dashboard.dart';
+
+// LOGIN PAGE
 
 TextEditingController username = TextEditingController();
 TextEditingController password = TextEditingController();
 TextEditingController posId = TextEditingController();
 
-class HomePageController extends GetxController {
-  final isLoading = false.obs;
-  switchLoading() => isLoading.value = !isLoading.value;
-}
 
 class MyHomePage extends StatelessWidget {
+
+
   MyHomePage({Key? key}) : super(key: key);
-  final HomePageController controller = Get.put(HomePageController());
+  final controller = Get.put(OperatorController(), tag: 'operatorControllerTag');
 
   @override
   Widget build(BuildContext context) {
@@ -85,56 +86,64 @@ class MyHomePage extends StatelessWidget {
                             EdgeInsets.only(top: 10.0, left: pd, right: pd),
                         child: SizedBox(
                           height: 40,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              bool valid = isValid();
-                              controller.switchLoading();
-                              Timer(const Duration(seconds: 3), () {
-                                controller.switchLoading();
-                                if (valid) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const DashBoard(),
-                                    ),
-                                  );
-                                } else {
-                                  Get.snackbar(
-                                    "Error",
-                                    "Invalid details",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.red,
-                                    margin: const EdgeInsets.all(10),
-                                    icon:
-                                        const Icon(Icons.warning_amber_rounded),
-                                  );
-                                }
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.black,
-                              elevation: 20.0,
-                              shadowColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                          child:
+                              ElevatedButton(
+                              onPressed: () async{
+                                // bool valid = isValid();
+                                // controller.switchLoading();
+
+                                // if (controller.loggedIn.value) {
+                                //   Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (context) => DashBoard(),
+                                //     ),
+                                //   );
+                                // } else {
+                                  await controller.login(username.text, password.text, posId.text);
+
+                                  if(controller.loggedIn.value == false) {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Invalid details",
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      margin: const EdgeInsets.all(10),
+                                      icon:
+                                      const Icon(Icons.warning_amber_rounded),
+                                    );
+                                  }else{
+                                    Navigator.pushAndRemoveUntil(context,
+                                        MaterialPageRoute(builder: (context)=>DashBoard()), (route) => false);
+                                  }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.black,
+                                elevation: 20.0,
+                                shadowColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                side: const BorderSide(
+                                  color: Colors.black,
+                                  width: 0.6,
+                                ),
                               ),
-                              side: const BorderSide(
-                                color: Colors.black,
-                                width: 0.6,
-                              ),
-                            ),
-                            child: const SizedBox(
-                              width: 150.0,
-                              child: Center(
-                                child: Text(
-                                  "Login",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
+                              child: const SizedBox(
+                                width: 150.0,
+                                child: Center(
+                                  child: Text(
+                                    "Login",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+
+
+
                         ),
                       ),
                       const SizedBox(height: 1.0)
