@@ -1,12 +1,22 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/screens/components/barcode_scanner.dart';
 import 'package:mi_crators/screens/new_payment.dart';
 
-class NewPaymentPc extends StatelessWidget {
-  const NewPaymentPc({Key? key}) : super(key: key);
+class InputController extends GetxController {
+  Rx<TextEditingController> textEditingController = TextEditingController().obs;
+  updateText(String value) => textEditingController.value.text = value;
+}
 
+class NewPaymentPc extends StatelessWidget {
+  NewPaymentPc({Key? key}) : super(key: key);
+
+  InputController controller = InputController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -20,7 +30,7 @@ class NewPaymentPc extends StatelessWidget {
               SizedBox(
                 width: max(size.width - 120, 200),
                 child: TextField(
-                  onChanged: (value) {},
+                  controller: controller.textEditingController.value,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
@@ -38,7 +48,14 @@ class NewPaymentPc extends StatelessWidget {
               SizedBox(
                 height: 45,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    var value = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BarcodeScanner()));
+                    print("This is the value of barcode = ${value.toString()}");
+                    controller.updateText(value.toString());
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.black,

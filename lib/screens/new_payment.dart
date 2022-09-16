@@ -19,7 +19,7 @@ class NewPayment extends StatelessWidget {
         floatingActionButtonLocation:
             FloatingActionButtonLocation.miniStartDocked,
         appBar: createAppBar(title: "New Payment", backButton: true),
-        body: isPc! ? const NewPaymentPc() : const NewPaymentPhone());
+        body: isPc! ? NewPaymentPc() : NewPaymentPhone());
   }
 }
 
