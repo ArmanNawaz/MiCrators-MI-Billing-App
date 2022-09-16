@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mi_crators/screens/home_page.dart';
 
 const Duration duration = Duration(seconds: 3);
@@ -17,8 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Timer(duration, () {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => MyHomePage()));
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder:(context)=>MyHomePage()), (route) => false);
     });
     super.initState();
   }

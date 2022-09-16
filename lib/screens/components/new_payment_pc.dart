@@ -47,6 +47,7 @@ class NewPaymentPc extends StatelessWidget {
               ),
               SizedBox(
                 height: 45,
+                // Barcode Button
                 child: ElevatedButton(
                   onPressed: () async {
                     var value = await Navigator.push(
