@@ -61,6 +61,7 @@ class WarrantyCard extends StatelessWidget {
               }
             },
             onTapCancel: () {
+              warrantyController.selectWarranty(0);
               warrantySelectionController.updateSelection();
             },
             child: Container(

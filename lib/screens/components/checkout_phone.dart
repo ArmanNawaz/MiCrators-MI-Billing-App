@@ -6,6 +6,7 @@ import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/customer_controller.dart';
 import 'package:mi_crators/screens/components/checkout_pc.dart';
 import 'package:mi_crators/screens/dashboard.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../controller/cart_controller.dart';
 
@@ -14,17 +15,24 @@ class DropDownController extends GetxController {
   changeSelected(String value) => selectedValue.value = value;
 }
 
+class PaymentController extends GetxController {
+  final paymentMethod = "None".obs;
+  updatePaymentMethod(String value) {
+    paymentMethod.value = value;
+  }
+}
+
 class CheckoutPhone extends StatelessWidget {
   CheckoutPhone({Key? key}) : super(key: key);
-
+  PaymentController paymentController = PaymentController();
   List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
 
   showAlertDialog(
       BuildContext context, String message, void Function() onPressed) {
     // set up the button
     Widget okButton = TextButton(
-      child: Text("OK"),
       onPressed: onPressed,
+      child: const Text("OK"),
     );
 
     // set up the AlertDialog
@@ -206,15 +214,31 @@ class CheckoutPhone extends StatelessWidget {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CreatePaymentButtons(title: "Cash"),
-                      CreatePaymentButtons(title: "UPI"),
-                      CreatePaymentButtons(title: "Card")
-                    ],
-                  )
+                  Obx(() => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CreatePaymentButtons(
+                            title: "Offline",
+                            onTap: () {
+                              paymentController.updatePaymentMethod("Offline");
+                            },
+                            color: paymentController.paymentMethod.value ==
+                                    "Offline"
+                                ? primaryColor
+                                : Colors.white,
+                          ),
+                          CreatePaymentButtons(
+                            title: "Online",
+                            onTap: () {
+                              paymentController.updatePaymentMethod("Online");
+                            },
+                            color: paymentController.paymentMethod.value ==
+                                    "Online"
+                                ? primaryColor
+                                : Colors.white,
+                          ),
+                        ],
+                      ))
                 ],
               ),
             ),
@@ -222,49 +246,73 @@ class CheckoutPhone extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: SizedBox(
-              width: size.width / 2,
-              height: 45,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (await cartController
-                          .sendCartPayment(customerController.phoneNo.value) ==
-                      false) {
-                    showAlertDialog(context, 'Unsuccessful', () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => DashBoard())),
-                          (route) => false);
-                    });
-                  } else {
-                    showAlertDialog(context, 'Successful', () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => DashBoard())),
-                          (route) => false);
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.black,
-                  elevation: 20.0,
-                  shadowColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                width: size.width / 2,
+                height: 45,
+                child: Obx(
+                  () => ElevatedButton(
+                    onPressed: () async {
+                      if (paymentController.paymentMethod.value == "None") {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Payment Method Error"),
+                                content: const Text("Select a payment method"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("OK"),
+                                  )
+                                ],
+                              );
+                            });
+                      } else if (paymentController.paymentMethod.value ==
+                          "Online") {
+                        final Uri uri = Uri.parse("https://www.google.com/");
+                        launchUrl(uri);
+                      } else if (await cartController.sendCartPayment(
+                              customerController.phoneNo.value) ==
+                          false) {
+                        showAlertDialog(context, 'Unsuccessful', () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) => DashBoard())),
+                              (route) => false);
+                        });
+                      } else {
+                        showAlertDialog(context, 'Successful', () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) => DashBoard())),
+                              (route) => false);
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.black,
+                      elevation: 20.0,
+                      shadowColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      side: const BorderSide(
+                        color: Colors.black,
+                        width: 0.6,
+                      ),
+                    ),
+                    child: Text(
+                      paymentController.paymentMethod.value == "Online"
+                          ? "Pay Online"
+                          : "Confirm Payment",
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                    ),
                   ),
-                  side: const BorderSide(
-                    color: Colors.black,
-                    width: 0.6,
-                  ),
-                ),
-                child: const Text(
-                  "Confirm Payment",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
-            ),
+                )),
           ),
         ],
       ),
@@ -321,41 +369,41 @@ class CustomerCard extends StatelessWidget {
   }
 }
 
-class CreatePaymentButtons extends StatelessWidget {
-  CreatePaymentButtons({Key? key, this.title}) : super(key: key);
-  String? title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          const EdgeInsets.only(top: 20.0, left: 10, right: 10, bottom: 20),
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          elevation: 10.0,
-          shadowColor: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          side: const BorderSide(
-            color: Colors.black,
-            width: 0.6,
-          ),
-        ),
-        child: SizedBox(
-          width: 100,
-          height: 100,
-          child: Center(
-            child: Text(
-              title!,
-              style: const TextStyle(fontSize: 20),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+// class CreatePaymentButtons extends StatelessWidget {
+//   CreatePaymentButtons({Key? key, this.title}) : super(key: key);
+//   String? title;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding:
+//           const EdgeInsets.only(top: 20.0, left: 10, right: 10, bottom: 20),
+//       child: ElevatedButton(
+//         onPressed: () {},
+//         style: ElevatedButton.styleFrom(
+//           backgroundColor: Colors.white,
+//           foregroundColor: Colors.black,
+//           elevation: 10.0,
+//           shadowColor: Colors.black,
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(15),
+//           ),
+//           side: const BorderSide(
+//             color: Colors.black,
+//             width: 0.6,
+//           ),
+//         ),
+//         child: SizedBox(
+//           width: 80,
+//           height: 80,
+//           child: Center(
+//             child: Text(
+//               title!,
+//               style: const TextStyle(fontSize: 20),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
