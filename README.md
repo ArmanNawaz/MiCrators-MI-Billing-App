@@ -35,8 +35,8 @@ Once You have them downloaded We can proceed further:
 3. Open MySQL Workbench and connect to MySQL.
 4. Open the database.sql from the cloned folder and copy and paste the whole thing in the text area of your workbench. Run by pressing the Lightning icon above.
 5. Open terminal and enter the cloned repo by executing `cd MiCrators-MI-Billing-App` from the folder where you have cloned.
-6. Now from there go to the backend by executing `cd backend`.
-7. Run the backedn with the command `node index.js` or `npm start`.
+6. Now from there go to the backend by executing `cd backend` in the terminal.
+7. Run the backedn with the command `node index.js` or `npm start` in the terminal.
 8. Open project in Android Studio.
 9. Run get dependencies.
 10. Select the platform and run the application.
