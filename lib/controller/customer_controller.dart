@@ -10,6 +10,7 @@ class CustomerController extends GetxController{
   Rx<bool> isRetrieving = false.obs;
   CustomerModel customerModel = CustomerModel();
 
+
   getCustomer(String cus_ph) async{
 
     isRetrieving.value = true;
@@ -26,8 +27,18 @@ class CustomerController extends GetxController{
 
   }
 
-  registerCustomer(String cus_ph) async{
+  registerCustomer(String ccus_ph, String eemail, String aaddress, String nname) async{
+    isRetrieving.value = true;
+    var response = await customerModel.setCustomer(ccus_ph, eemail, aaddress, nname);
+    if(response['email'].length == 0){
+      return;
+    }
+    isRetrieving.value = false;
+    email.value = response['email'].toString();
+    name.value = response['cus_name'].toString();
+    phoneNo.value = response['cus_ph'].toString();
 
+    address.value = response['address'];
   }
 
 
