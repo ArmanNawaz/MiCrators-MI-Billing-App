@@ -19,8 +19,8 @@ class CheckoutPhone extends StatelessWidget {
 
   List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
 
-  showAlertDialog(BuildContext context, String message, void Function() onPressed) {
-
+  showAlertDialog(
+      BuildContext context, String message, void Function() onPressed) {
     // set up the button
     Widget okButton = TextButton(
       child: Text("OK"),
@@ -29,7 +29,7 @@ class CheckoutPhone extends StatelessWidget {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Response"),
+      title: const Text("Response"),
       content: Text(message),
       actions: [
         okButton,
@@ -47,7 +47,7 @@ class CheckoutPhone extends StatelessWidget {
 
   DropDownController controller = DropDownController();
   final TextEditingController phoneNo = TextEditingController();
-  final TextEditingController  email = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController name = TextEditingController();
   final TextEditingController address = TextEditingController();
   final CustomerController customerController = Get.find();
@@ -75,19 +75,18 @@ class CheckoutPhone extends StatelessWidget {
                       // color: const Color(0xffc7c7c7),
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: GetX<CartController>(
-                        builder: (cartController){
+                    child: GetX<CartController>(builder: (cartController) {
+                      List<ItemCard> items = [];
+                      for (var item in cartController.cart) {
+                        items.add(ItemCard(
+                          itemName: item.name,
+                          saleAmount: int.parse(item.cost),
+                          discount: 0,
+                        ));
+                      }
 
-                          List<ItemCard> items= [];
-                          for(var item in cartController.cart){
-                            items.add(ItemCard(itemName: item.name, saleAmount: int.parse(item.cost), discount: 0,));
-                          }
-
-                          return Column(
-                              children: items
-                          );
-                        }
-                    ),
+                      return Column(children: items);
+                    }),
                   ),
                 ),
               ],
@@ -111,7 +110,7 @@ class CheckoutPhone extends StatelessWidget {
                   children: [
                     CustomerCard(
                       onChanged: (text) async {
-                        if(text.length==10){
+                        if (text.length == 10) {
                           await customerController.getCustomer(phoneNo.text);
                           name.text = customerController.name.value;
                           email.text = customerController.email.value;
@@ -124,21 +123,19 @@ class CheckoutPhone extends StatelessWidget {
                       enableFields: true,
                     ),
                     CustomerCard(
-                      onChanged: (text){},
+                      onChanged: (text) {},
                       controller: name,
                       title: "Name",
                       keyboardType: TextInputType.text,
                       enableFields: true,
                     ),
                     CustomerCard(
-                      onChanged: (_){},
+                      onChanged: (_) {},
                       controller: email,
                       title: "Email",
                       keyboardType: TextInputType.emailAddress,
                       enableFields: true,
                     ),
-
-
                     Padding(
                       padding: const EdgeInsets.only(
                           left: 20.0, right: 25, top: 10, bottom: 10),
@@ -179,7 +176,7 @@ class CheckoutPhone extends StatelessWidget {
                     ),
                     controller.selectedValue.value == deliveryModes[1]
                         ? CustomerCard(
-                            onChanged: (_){},
+                            onChanged: (_) {},
                             controller: address,
                             title: "Address",
                             keyboardType: TextInputType.text,
@@ -228,18 +225,26 @@ class CheckoutPhone extends StatelessWidget {
               width: size.width / 2,
               height: 45,
               child: ElevatedButton(
-                onPressed: () async{
-                  if(await cartController.sendCartPayment(customerController.phoneNo.value) == false){
-                  showAlertDialog(context, 'Unsuccessful', () {
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
-                  });
-                  }else{
-                  showAlertDialog(context, 'Successful', () {
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
-                  });
+                onPressed: () async {
+                  if (await cartController
+                          .sendCartPayment(customerController.phoneNo.value) ==
+                      false) {
+                    showAlertDialog(context, 'Unsuccessful', () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => DashBoard())),
+                          (route) => false);
+                    });
+                  } else {
+                    showAlertDialog(context, 'Successful', () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => DashBoard())),
+                          (route) => false);
+                    });
                   }
-
-
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
@@ -268,7 +273,12 @@ class CheckoutPhone extends StatelessWidget {
 }
 
 class CustomerCard extends StatelessWidget {
-  CustomerCard({required this.onChanged, required this.controller, this.title, this.keyboardType, this.enableFields});
+  CustomerCard(
+      {required this.onChanged,
+      required this.controller,
+      this.title,
+      this.keyboardType,
+      this.enableFields});
   String? title;
   TextInputType? keyboardType;
   bool? enableFields;

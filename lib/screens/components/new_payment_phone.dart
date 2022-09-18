@@ -24,7 +24,6 @@ class NewPaymentPhone extends StatelessWidget {
   CartController cartController = Get.find();
   final warrantyController = Get.put(WarrantyController());
 
-
   NewPaymentController newPaymentController = Get.find();
 
   @override
@@ -45,12 +44,13 @@ class NewPaymentPhone extends StatelessWidget {
                 SizedBox(
                   width: max(size.width - 120, 200),
                   child: TextField(
-                    onChanged: (text) async{
+                    onChanged: (text) async {
                       print(text.length);
-                      if(text.length == 11){
+                      if (text.length == 11) {
                         print('Searching...');
                         await newPaymentController.loadItem(text);
-                      }else newPaymentController.reset();
+                      } else
+                        newPaymentController.reset();
                     },
                     controller: controller.textEditingController.value,
                     keyboardType: TextInputType.text,
@@ -120,41 +120,36 @@ class NewPaymentPhone extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20)),
                     ),
                   ),
-                  GetX<NewPaymentController>(
-                    builder: (controller) {
-                      return Column(
-                        children: [
-                          DetailsCard(
-                            heading: "Category",
-                            desc: controller.categoryName.value,
-                          ),
-                          DetailsCard(
-                            heading: "Product",
-                            desc: controller.productName.value,
-                          ),
-                          SizedBox(
-                            height: 240,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: controller.warranties.length,
-                              itemBuilder: (BuildContext context, int index) =>
-                                  GestureDetector(
-                                    onTap:(){
-                                      warrantyController.selectWarranty(controller.warranties[index].warranty_id);
-                                    },
-                                    child: WarrantyCard(
-                                        id: controller.warranties[index].warranty_id.toString(),
-                                        type: controller.warranties[index].warranty_type,
-                                        name: controller.warranties[index].warranty_name,
-                                        period: controller.warranties[index].days_valid.toString(),
-                                        desc: ""),
-                                  ),
+                  GetX<NewPaymentController>(builder: (controller) {
+                    return Column(
+                      children: [
+                        DetailsCard(
+                          heading: "Category",
+                          desc: controller.categoryName.value,
+                        ),
+                        DetailsCard(
+                          heading: "Product",
+                          desc: controller.productName.value,
+                        ),
+                        SizedBox(
+                          height: 240,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: controller.warranties.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                WarrantyCard(
+                              id: controller.warranties[index].warranty_id
+                                  .toString(),
+                              type: controller.warranties[index].warranty_type,
+                              name: controller.warranties[index].warranty_name,
+                              period: controller.warranties[index].days_valid
+                                  .toString(),
                             ),
                           ),
-                        ],
-                      );
-                    }
-                  ),
+                        ),
+                      ],
+                    );
+                  }),
                   Padding(
                     padding: const EdgeInsets.only(
                         top: 20, left: 30, right: 10, bottom: 10),
@@ -164,16 +159,25 @@ class NewPaymentPhone extends StatelessWidget {
                       // ADD TO CART BUTTON
 
                       child: ElevatedButton(
-                        onPressed: () async{
-                          var serialNo =  controller.textEditingController.value.text.toString();
-                          var details1= await Hive.lazyBox(stock).get(serialNo);
+                        onPressed: () async {
+                          var serialNo = controller
+                              .textEditingController.value.text
+                              .toString();
+                          var details1 =
+                              await Hive.lazyBox(stock).get(serialNo);
                           print(details1['cost']);
                           // Map<String, dynamic> details = await Hive.lazyBox(stock).get(serialNo);
                           String cost = details1['cost'].toString();
-                          String warranty = warrantyController.warrantySelected.value.toString();
+                          String warranty = warrantyController
+                              .warrantySelected.value
+                              .toString();
                           String name = details1['product_name'];
-                          cartController.addInCart(BillItemModel(serial_no: serialNo, data: DateTime.now().toString(), cost: cost, warranty_id: warranty
-                              , name: name));
+                          cartController.addInCart(BillItemModel(
+                              serial_no: serialNo,
+                              data: DateTime.now().toString(),
+                              cost: cost,
+                              warranty_id: warranty,
+                              name: name));
                           newPaymentController.reset();
                         },
                         style: ElevatedButton.styleFrom(

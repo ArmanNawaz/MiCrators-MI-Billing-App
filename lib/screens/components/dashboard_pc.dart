@@ -1,26 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:hive/hive.dart';
 import 'package:get/get.dart';
-import 'package:mi_crators/controller/previoud_search_controller.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/stock_controller.dart';
 import 'package:mi_crators/screens/new_payment.dart';
 
 import '../../controller/cart_controller.dart';
+import '../../controller/previoud_search_controller.dart';
 
 class DashPC extends StatelessWidget {
+  final String name, authorisedPayments, posId, gender, age;
 
-  final String name, authorisedPayments;
-
-  DashPC(this.name, this.authorisedPayments);
+  DashPC(this.name, this.authorisedPayments, this.posId, this.gender, this.age);
   CartController cartController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-
+    // var hiveBox = Hive.box(prevTransactions);
+    // String transaction_id = hiveBox.get('transaction_id');
 
     Size size = MediaQuery.of(context).size;
     return ListView(
@@ -49,7 +48,7 @@ class DashPC extends StatelessWidget {
                         ),
                       ),
                     ),
-                     const Padding(
+                    const Padding(
                       padding:
                           EdgeInsets.only(top: 30.0, bottom: 30.0, right: 40),
                       child: VerticalDivider(
@@ -60,9 +59,11 @@ class DashPC extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("$name"),
-                        Text("Employee"),
-                        Text("Payment Authorised: ${authorisedPayments}")
+                        Text(name),
+                        Text("Gender: $gender"),
+                        Text("Age: $age"),
+                        Text("Payment Authorised: $authorisedPayments"),
+                        Text("POS ID: $posId")
                       ],
                     )
                   ],
@@ -78,60 +79,61 @@ class DashPC extends StatelessWidget {
                   children: [
                     SizedBox(
                       height: 45,
-                      child: GetX<StockController>(
-                        builder: (controller) {
-                          return ElevatedButton(
-                            onPressed: () {
-                              cartController.clearCart();
-                              if(controller.retriving == false)
+                      child: GetX<StockController>(builder: (controller) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            cartController.clearCart();
+                            if (controller.retriving == false) {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => NewPayment()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: controller.retriving.value ? Colors.grey : primaryColor,
-                              foregroundColor: Colors.black,
-                              elevation: 20.0,
-                              shadowColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              side: const BorderSide(
-                                color: Colors.black,
-                                width: 0.6,
-                              ),
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: controller.retriving.value
+                                ? Colors.grey
+                                : primaryColor,
+                            foregroundColor: Colors.black,
+                            elevation: 20.0,
+                            shadowColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            child: SizedBox(
-                              width: max(size.width - 700, 200),
-                              child: Center(
-                                child:
-                                    (controller.retriving.value) ?
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: const [
-                                            Text(
+                            side: const BorderSide(
+                              color: Colors.black,
+                              width: 0.6,
+                            ),
+                          ),
+                          child: SizedBox(
+                            width: max(size.width - 700, 200),
+                            child: Center(
+                              child: (controller.retriving.value)
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                          Text(
                                             "New Payment",
-                                            style:
-                                            TextStyle(color: Colors.white, fontSize: 20),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
                                           ),
                                           SizedBox(width: 3.0),
                                           Text('(Loading...)',
-                                          style: TextStyle(color: Colors.white, fontSize: 10.0)
-                                          )
-                                        ]
-                                      )
-                                    :
-                                    const Text(
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10.0))
+                                        ])
+                                  : const Text(
                                       "New Payment",
-                                      style:
-                                          TextStyle(color: Colors.white, fontSize: 20),
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
                                     ),
-                              ),
                             ),
-                          );
-                        }
-                      ),
+                          ),
+                        );
+                      }),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -195,18 +197,26 @@ class DashPC extends StatelessWidget {
               SizedBox(
                 height: 240,
                 child: GetX<PreviousSearchController>(
-                  builder: (prevController){
+                  builder: (prevController) {
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: prevController.previoudPayments.value.length,
                       itemBuilder: (BuildContext context, int index) =>
                           RecentCustomerCard(
-                            ind: prevController.previoudPayments.value[index].customerId as int,
-                          ),
+                        customerId: prevController
+                            .previoudPayments.value[index].customerId,
+                        transactionId: prevController
+                            .previoudPayments.value[index].transactionId,
+                        transactionTime: prevController
+                            .previoudPayments.value[index].transactionTime,
+                        cusName: prevController
+                            .previoudPayments.value[index].cus_name,
+                        amount:
+                            prevController.previoudPayments.value[index].cost,
+                      ),
                     );
                   },
-                )
-
+                ),
               ),
             ],
           ),
@@ -218,8 +228,20 @@ class DashPC extends StatelessWidget {
 
 // ignore: must_be_immutable
 class RecentCustomerCard extends StatelessWidget {
-  RecentCustomerCard({Key? key, this.ind}) : super(key: key);
-  int? ind;
+  RecentCustomerCard(
+      {Key? key,
+      this.customerId,
+      this.transactionId,
+      this.transactionTime,
+      this.cusName,
+      this.amount})
+      : super(key: key);
+  String? transactionId;
+  int? customerId;
+  String? transactionTime;
+  String? cusName;
+  int? amount;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -231,7 +253,19 @@ class RecentCustomerCard extends StatelessWidget {
           color: const Color(0xffc7c7c7),
           borderRadius: BorderRadius.circular(15),
         ),
-        child: Center(child: Text("Hello Customer $ind")),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Transaction Id: $transactionId"),
+              Text("Customer Id: $customerId"),
+              Text("Customer Name: $cusName"),
+              Text("Amount: Rs. ${amount.toString()}/-"),
+              Text("Date: ${transactionTime?.substring(0, 10)}")
+            ],
+          ),
+        ),
       ),
     );
   }

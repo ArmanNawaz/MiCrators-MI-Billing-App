@@ -1,15 +1,17 @@
 import 'dart:math';
-import 'package:get/get.dart';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import '../../constants.dart';
 import '../../controller/previoud_search_controller.dart';
 import 'dashboard_pc.dart';
 
 class DashPhone extends StatelessWidget {
+  final String name, paymentsAuthorised, posId, gender, age;
 
-  final String name, paymentsAuthorised;
-
-  DashPhone(this.name, this.paymentsAuthorised);
+  DashPhone(
+      this.name, this.paymentsAuthorised, this.posId, this.gender, this.age);
 
   final getTransactionsController = Get.put(PreviousSearchController());
 
@@ -49,8 +51,15 @@ class DashPhone extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(name),
-                    Text("Employee"),
-                    Text("Payment Authorised: ${paymentsAuthorised}")
+                    Text("Gender : $gender"),
+                    Text("Age: $age"),
+                    Text("Payment Authorised: $paymentsAuthorised"),
+                    size.width > 460
+                        ? Text("POS ID: $posId")
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [const Text("POS ID: "), Text(posId)],
+                          ),
                   ],
                 )
               ],
@@ -110,17 +119,25 @@ class DashPhone extends StatelessWidget {
         SizedBox(
           height: size.width,
           child: GetX<PreviousSearchController>(
-              builder: (prevController){
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: prevController.previoudPayments.value.length,
-                  itemBuilder: (BuildContext context, int index) =>
-                  RecentCustomerCard(
-                    ind: prevController.previoudPayments.value[index].customerId as int,
-                  ),
-                );
-              },
-            ),
+            builder: (prevController) {
+              return ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: prevController.previoudPayments.value.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    RecentCustomerCard(
+                  customerId:
+                      prevController.previoudPayments.value[index].customerId,
+                  transactionId: prevController
+                      .previoudPayments.value[index].transactionId,
+                  transactionTime: prevController
+                      .previoudPayments.value[index].transactionTime,
+                  cusName:
+                      prevController.previoudPayments.value[index].cus_name,
+                  amount: prevController.previoudPayments.value[index].cost,
+                ),
+              );
+            },
+          ),
         ),
       ],
     );

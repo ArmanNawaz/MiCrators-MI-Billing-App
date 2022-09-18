@@ -1,8 +1,6 @@
 // ignore_for_file: must_be_immutable
-import 'package:get/get.dart';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/cart_controller.dart';
 import 'package:mi_crators/screens/dashboard.dart';
@@ -12,11 +10,17 @@ import 'checkout_phone.dart';
 
 bool verified = false;
 
+class DropDownController extends GetxController {
+  final selectedValue = "Pick".obs;
+  changeSelected(String value) => selectedValue.value = value;
+}
+
 class CheckoutPC extends StatelessWidget {
   CheckoutPC({Key? key}) : super(key: key);
-
+  List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
+  DropDownController controller = DropDownController();
   final TextEditingController phoneNo = TextEditingController();
-  final TextEditingController  email = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController name = TextEditingController();
   final TextEditingController address = TextEditingController();
   final CustomerController customerController = Get.find();
@@ -24,18 +28,17 @@ class CheckoutPC extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    showAlertDialog(BuildContext context, String message, void Function() onPressed) {
-
+    showAlertDialog(
+        BuildContext context, String message, void Function() onPressed) {
       // set up the button
       Widget okButton = TextButton(
-        child: Text("OK"),
         onPressed: onPressed,
+        child: const Text("OK"),
       );
 
       // set up the AlertDialog
       AlertDialog alert = AlertDialog(
-        title: Text("Response"),
+        title: const Text("Response"),
         content: Text(message),
         actions: [
           okButton,
@@ -79,19 +82,19 @@ class CheckoutPC extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                           ),
 
-                          child: GetX<CartController>(
-                            builder: (cartController){
-
-                              List<ItemCard> items= [];
-                              for(var item in cartController.cart){
-                                items.add(ItemCard(itemName: item.name, saleAmount: int.parse(item.cost), discount: 0,));
-                              }
-
-                              return Column(
-                                children: items
-                              );
+                          child:
+                              GetX<CartController>(builder: (cartController) {
+                            List<ItemCard> items = [];
+                            for (var item in cartController.cart) {
+                              items.add(ItemCard(
+                                itemName: item.name,
+                                saleAmount: int.parse(item.cost),
+                                discount: 0,
+                              ));
                             }
-                          ),
+
+                            return Column(children: items);
+                          }),
                         ),
                       ),
                     ],
@@ -127,9 +130,18 @@ class CheckoutPC extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CreatePaymentButtons(title: "Cash", onTap: (){},),
-                            CreatePaymentButtons(title: "UPI", onTap: (){},),
-                            CreatePaymentButtons(title: "Card", onTap: (){},)
+                            CreatePaymentButtons(
+                              title: "Cash",
+                              onTap: () {},
+                            ),
+                            CreatePaymentButtons(
+                              title: "UPI",
+                              onTap: () {},
+                            ),
+                            CreatePaymentButtons(
+                              title: "Card",
+                              onTap: () {},
+                            )
                           ],
                         )
                       ],
@@ -139,45 +151,96 @@ class CheckoutPC extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Container(
-              height: 270,
-              decoration: BoxDecoration(
-                color: const Color(0xffc7c7c7),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                children: [
-                  CustomerCard(
-                    onChanged: (text) async {
-                      if(text.length==10){
-                        await customerController.getCustomer(phoneNo.text);
-                        name.text = customerController.name.value;
-                        email.text = customerController.email.value;
-                        address.text = customerController.address.value;
-                      }
-                    },
-                    controller: phoneNo,
-                    title: "Phone Number",
-                    keyboardType: TextInputType.phone,
-                    enableFields: true,
-                  ),
-                  CustomerCard(
-                    onChanged: (text){},
-                    controller: name,
-                    title: "Name",
-                    keyboardType: TextInputType.text,
-                    enableFields: true,
-                  ),
-                  CustomerCard(
-                    onChanged: (_){},
-                    controller: email,
-                    title: "Email",
-                    keyboardType: TextInputType.emailAddress,
-                    enableFields: true,
-                  ),
-                ],
+          Obx(
+            () => Padding(
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                height: controller.selectedValue.value == deliveryModes[0]
+                    ? 470
+                    : 600,
+                decoration: BoxDecoration(
+                  color: const Color(0xffc7c7c7),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  children: [
+                    CustomerCard(
+                      onChanged: (text) async {
+                        if (text.length == 10) {
+                          await customerController.getCustomer(phoneNo.text);
+                          name.text = customerController.name.value;
+                          email.text = customerController.email.value;
+                          address.text = customerController.address.value;
+                        }
+                      },
+                      controller: phoneNo,
+                      title: "Phone Number",
+                      keyboardType: TextInputType.phone,
+                      enableFields: true,
+                    ),
+                    CustomerCard(
+                      onChanged: (text) {},
+                      controller: name,
+                      title: "Name",
+                      keyboardType: TextInputType.text,
+                      enableFields: true,
+                    ),
+                    CustomerCard(
+                      onChanged: (_) {},
+                      controller: email,
+                      title: "Email",
+                      keyboardType: TextInputType.emailAddress,
+                      enableFields: true,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 20.0, right: 25, top: 10, bottom: 10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: DropdownButton<String>(
+                          value: controller.selectedValue.value,
+                          isExpanded: true,
+                          icon: const Icon(Icons.expand_more),
+                          iconSize: 40,
+                          underline: const SizedBox(height: 0, width: 0),
+                          elevation: 16,
+                          dropdownColor: Colors.white,
+                          onChanged: (String? newValue) {
+                            controller.changeSelected(newValue!);
+                          },
+                          items: deliveryModes
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    controller.selectedValue.value == deliveryModes[1]
+                        ? CustomerCard(
+                            onChanged: (_) {},
+                            controller: address,
+                            title: "Address",
+                            keyboardType: TextInputType.text,
+                            enableFields: true,
+                          )
+                        : const SizedBox(height: 0, width: 0),
+                  ],
+                ),
               ),
             ),
           ),
@@ -187,14 +250,24 @@ class CheckoutPC extends StatelessWidget {
               width: size.width / 2,
               height: 45,
               child: ElevatedButton(
-                onPressed: () async{
-                  if(await cartController.sendCartPayment(customerController.phoneNo.value) == false){
+                onPressed: () async {
+                  if (await cartController
+                          .sendCartPayment(customerController.phoneNo.value) ==
+                      false) {
                     showAlertDialog(context, 'Unsuccessful', () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => DashBoard())),
+                          (route) => false);
                     });
-                  }else{
+                  } else {
                     showAlertDialog(context, 'Successful', () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => DashBoard())),
+                          (route) => false);
                     });
                   }
                 },
@@ -306,7 +379,8 @@ class ItemCard extends StatelessWidget {
 }
 
 class CreatePaymentButtons extends StatelessWidget {
-  CreatePaymentButtons({Key? key, required this.onTap, this.title}) : super(key: key);
+  CreatePaymentButtons({Key? key, required this.onTap, this.title})
+      : super(key: key);
   String? title;
 
   void Function() onTap;

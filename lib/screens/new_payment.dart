@@ -11,6 +11,13 @@ import 'package:mi_crators/screens/components/new_payment_phone.dart';
 late Size size;
 late bool? isPc;
 
+class WarrantySelectionController extends GetxController {
+  final color = const Color(0xffc7c7c7).obs;
+  updateSelection() => color.value = color.value == const Color(0xffc7c7c7)
+      ? primaryColor
+      : const Color(0xffc7c7c7);
+}
+
 class NewPayment extends StatelessWidget {
   final newPaymentController = Get.put(NewPaymentController());
 
@@ -20,11 +27,9 @@ class NewPayment extends StatelessWidget {
     size = MediaQuery.of(context).size;
     isPc = size.width > 900;
     return Scaffold(
-        floatingActionButton: GetX<CartController>(
-          builder: (controller) {
-            return CreateFloatingButton(controller.total_amount.value.toString());
-          }
-        ),
+        floatingActionButton: GetX<CartController>(builder: (controller) {
+          return CreateFloatingButton(controller.total_amount.value.toString());
+        }),
         floatingActionButtonLocation:
             FloatingActionButtonLocation.miniStartDocked,
         appBar: createAppBar(title: "New Payment", backButton: true),
@@ -32,48 +37,49 @@ class NewPayment extends StatelessWidget {
   }
 }
 
-
 // ignore: must_be_immutable
 class WarrantyCard extends StatelessWidget {
-
   WarrantyController warrantyController = Get.find();
-
-  WarrantyCard({Key? key,required this.id, this.type, this.name, this.period, this.desc})
+  WarrantySelectionController warrantySelectionController =
+      WarrantySelectionController();
+  WarrantyCard({Key? key, required this.id, this.type, this.name, this.period})
       : super(key: key);
   String? type;
   String? name;
   String? period;
-  String? desc;
   String id;
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0, left: 30),
-      child: GestureDetector(
-        onTap: () {
-          warrantyController.selectWarranty(int.parse(id));
-          // if(warrantyController.warrantySelected.value == id){
-          //   // TODO: change color to selected
-          // }
-        },
-        child: Container(
-          height: 200,
-          width: 200,
-          decoration: BoxDecoration(
-            color:  Color(0xffc7c7c7),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text("Type: $type"),
-              Text("Name: $name"),
-              Text("Period: $period days"),
-              Text("Desc: $desc"),
-            ],
-          ),
-        ),
-      ),
+      child: Obx(() => GestureDetector(
+            onTap: () {
+              print("here");
+              warrantyController.selectWarranty(int.parse(id));
+              if (warrantyController.warrantySelected.value == int.parse(id)) {
+                warrantySelectionController.updateSelection();
+              }
+            },
+            onTapCancel: () {
+              warrantySelectionController.updateSelection();
+            },
+            child: Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                color: warrantySelectionController.color.value,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text("Type: $type"),
+                  Text("Name: $name"),
+                  Text("Period: $period days"),
+                ],
+              ),
+            ),
+          )),
     );
   }
 }
@@ -113,7 +119,6 @@ class DetailsCard extends StatelessWidget {
 }
 
 class CreateFloatingButton extends StatelessWidget {
-
   String total_amount;
 
   CreateFloatingButton(this.total_amount);
@@ -125,14 +130,33 @@ class CreateFloatingButton extends StatelessWidget {
       width: isPc! ? size.width / 2 : size.width - 20,
       child: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const Checkout()));
+          if (int.parse(total_amount) == 0) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Empty Cart"),
+                    content: const Text("Please add some items in cart"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("OK"),
+                      )
+                    ],
+                  );
+                });
+          } else {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const Checkout()));
+          }
         },
         elevation: 20,
         backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child:
-            Text("Checkout : Rs.${total_amount}/-", style: TextStyle(fontSize: 20)),
+        child: Text("Checkout : Rs. $total_amount/-",
+            style: const TextStyle(fontSize: 20)),
       ),
     );
   }

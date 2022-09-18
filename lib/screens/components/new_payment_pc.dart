@@ -20,7 +20,6 @@ class InputController extends GetxController {
 }
 
 class NewPaymentPc extends StatelessWidget {
-
   InputController controller = InputController();
 
   CartController cartController = Get.find();
@@ -41,12 +40,14 @@ class NewPaymentPc extends StatelessWidget {
                 width: max(size.width - 120, 200),
                 child: TextField(
                   controller: controller.textEditingController.value,
-                  onChanged: (text) async{
+                  onChanged: (text) async {
                     print(text.length);
-                    if(text.length == 11){
+                    if (text.length == 11) {
                       print('Searching...');
                       await newPaymentController.loadItem(text);
-                    }else newPaymentController.reset();
+                    } else {
+                      newPaymentController.reset();
+                    }
                   },
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -104,42 +105,36 @@ class NewPaymentPc extends StatelessWidget {
             SizedBox(
               height: size.height - 200,
               width: size.width / 2 - 100,
-              child: GetX<NewPaymentController>(
-                builder: (controller) {
-                  return ListView(
-                    children: [
-                      DetailsCard(
-                        heading: "Category",
-                        desc: controller.categoryName.value,
-                      ),
-                      DetailsCard(
-                        heading: "Product",
-                        desc: controller.productName.value,
-                      ),
-                      SizedBox(
-                        height: 240,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: controller.warranties.length,
-                          itemBuilder: (BuildContext context, int index) =>
-                              GestureDetector(
-                                child: WarrantyCard(
-                                    id: controller.warranties[index].warranty_id.toString(),
-                                    type: controller.warranties[index].warranty_type,
-                                    name: controller.warranties[index].warranty_name,
-                                    period: controller.warranties[index].days_valid.toString(),
-                                    desc: ""),
-                                onTap: (){
-                                  print('tapped');
-                                  warrantyController.selectWarranty(controller.warranties[index].warranty_id);
-                                },
-                              ),
+              child: GetX<NewPaymentController>(builder: (controller) {
+                return ListView(
+                  children: [
+                    DetailsCard(
+                      heading: "Category",
+                      desc: controller.categoryName.value,
+                    ),
+                    DetailsCard(
+                      heading: "Product",
+                      desc: controller.productName.value,
+                    ),
+                    SizedBox(
+                      height: 220,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: controller.warranties.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            WarrantyCard(
+                          id: controller.warranties[index].warranty_id
+                              .toString(),
+                          type: controller.warranties[index].warranty_type,
+                          name: controller.warranties[index].warranty_name,
+                          period: controller.warranties[index].days_valid
+                              .toString(),
                         ),
                       ),
-                    ],
-                  );
-                }
-              ),
+                    ),
+                  ],
+                );
+              }),
             ),
             Column(
               children: [
@@ -165,20 +160,27 @@ class NewPaymentPc extends StatelessWidget {
 
                     // ADD TO CART BUTTON
 
-
                     child: ElevatedButton(
-                      onPressed: () async{
-                        var serialNo =  controller.textEditingController.value.text.toString();
-                        var details1= await Hive.lazyBox(stock).get(serialNo);
+                      onPressed: () async {
+                        var serialNo = controller
+                            .textEditingController.value.text
+                            .toString();
+                        var details1 = await Hive.lazyBox(stock).get(serialNo);
                         print(details1['cost']);
                         // Map<String, dynamic> details = await Hive.lazyBox(stock).get(serialNo);
                         String cost = details1['cost'].toString();
-                        String warranty = warrantyController.warrantySelected.value.toString();
+                        String warranty = warrantyController
+                            .warrantySelected.value
+                            .toString();
                         String name = details1['product_name'];
-                        cartController.addInCart(BillItemModel(serial_no: serialNo, data: DateTime.now().toString(), cost: cost, warranty_id: warranty
-                        , name: name));
+                        cartController.addInCart(BillItemModel(
+                            serial_no: serialNo,
+                            data: DateTime.now().toString(),
+                            cost: cost,
+                            warranty_id: warranty,
+                            name: name));
                         newPaymentController.reset();
-                        },
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: Colors.black,
