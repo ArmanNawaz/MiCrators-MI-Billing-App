@@ -22,6 +22,32 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key}) : super(key: key);
   final controller = Get.put(OperatorController(), tag: 'operatorControllerTag');
 
+  showAlertDialog(BuildContext context, String message, void Function() onPressed) {
+
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: onPressed,
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Response"),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -103,15 +129,8 @@ class MyHomePage extends StatelessWidget {
                                   await controller.login(username.text, password.text, posId.text);
 
                                   if(controller.loggedIn.value == false) {
-                                    Get.snackbar(
-                                      "Error",
-                                      "Invalid details",
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      backgroundColor: Colors.red,
-                                      margin: const EdgeInsets.all(10),
-                                      icon:
-                                      const Icon(Icons.warning_amber_rounded),
-                                    );
+                                    showAlertDialog(context, 'Invalid Details', () { Navigator.pop(context);});
+
                                   }else{
                                     Navigator.pushAndRemoveUntil(context,
                                         MaterialPageRoute(builder: (context)=>DashBoard()), (route) => false);

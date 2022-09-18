@@ -63,6 +63,7 @@ class CartController extends GetxController{
       'total_amount' : total_amount.value,
       'cus_ph': cus_ph,
       'discount': 0,
+      'successful' : true,
       'offline_payment': offlinePay.value,
       'billItems': []
     };
@@ -84,7 +85,7 @@ class CartController extends GetxController{
 
   // TODO: IMPLEMENT AN INTERFACE FOR LEFT OVER PAYMENETS.
 
-  sendCartPayment(String cus_ph) async {
+  Future<bool> sendCartPayment(String cus_ph) async {
     Map<String, dynamic> dataToSend = createApi(cus_ph);
     List<Map<String, dynamic>> list = [dataToSend]; // [{pos_id: , bills: []}]
 
@@ -92,13 +93,16 @@ class CartController extends GetxController{
 
     if(response.length == 0){
       Hive.box(unsuccessfulTransactions).put(cus_ph, dataToSend);
+      return false;
     }else if(response['failed_transactions'].length > 0){
       Hive.box(unsuccessfulTransactions).put(cus_ph, dataToSend);
+      return false;
     }else{
       Hive.box(succesfulTransactions).put(cus_ph, dataToSend);
       cart.value = [];
       total_amount.value = 0;
       offlinePay.value = false;
+      return true;
     }
 
 

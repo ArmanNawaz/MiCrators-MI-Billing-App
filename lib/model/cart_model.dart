@@ -16,8 +16,11 @@ class CartModel{
     };
 
     print('final Payment: ${finalPayment}');
+    print(jsonEncode(finalPayment));
     try{
-      var response = await http.post(Uri.parse(getHostUrl() + 'bill/'), body: jsonEncode(finalPayment));
+      var response = await http.post(Uri.parse(getHostUrl() + 'bill/'), body: jsonEncode(finalPayment),
+        headers: {"Content-Type": "application/json"},
+      );
       if(response.statusCode == 200){
         print(response.body);
         return jsonDecode(response.body);

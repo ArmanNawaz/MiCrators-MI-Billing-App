@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/cart_controller.dart';
+import 'package:mi_crators/screens/dashboard.dart';
 
 import '../../controller/customer_controller.dart';
 import 'checkout_phone.dart';
@@ -19,9 +20,37 @@ class CheckoutPC extends StatelessWidget {
   final TextEditingController name = TextEditingController();
   final TextEditingController address = TextEditingController();
   final CustomerController customerController = Get.find();
+  final CartController cartController = Get.find();
 
   @override
   Widget build(BuildContext context) {
+
+    showAlertDialog(BuildContext context, String message, void Function() onPressed) {
+
+      // set up the button
+      Widget okButton = TextButton(
+        child: Text("OK"),
+        onPressed: onPressed,
+      );
+
+      // set up the AlertDialog
+      AlertDialog alert = AlertDialog(
+        title: Text("Response"),
+        content: Text(message),
+        actions: [
+          okButton,
+        ],
+      );
+
+      // show the dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+
     Size size = MediaQuery.of(context).size;
     return SizedBox(
       height: size.height,
@@ -98,9 +127,9 @@ class CheckoutPC extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CreatePaymentButtons(title: "Cash"),
-                            CreatePaymentButtons(title: "UPI"),
-                            CreatePaymentButtons(title: "Card")
+                            CreatePaymentButtons(title: "Cash", onTap: (){},),
+                            CreatePaymentButtons(title: "UPI", onTap: (){},),
+                            CreatePaymentButtons(title: "Card", onTap: (){},)
                           ],
                         )
                       ],
@@ -158,7 +187,17 @@ class CheckoutPC extends StatelessWidget {
               width: size.width / 2,
               height: 45,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async{
+                  if(await cartController.sendCartPayment(customerController.phoneNo.value) == false){
+                    showAlertDialog(context, 'Unsuccessful', () {
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
+                    });
+                  }else{
+                    showAlertDialog(context, 'Successful', () {
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
+                    });
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.black,
@@ -267,8 +306,10 @@ class ItemCard extends StatelessWidget {
 }
 
 class CreatePaymentButtons extends StatelessWidget {
-  CreatePaymentButtons({Key? key, this.title}) : super(key: key);
+  CreatePaymentButtons({Key? key, required this.onTap, this.title}) : super(key: key);
   String? title;
+
+  void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -277,7 +318,7 @@ class CreatePaymentButtons extends StatelessWidget {
       padding:
           const EdgeInsets.only(top: 20.0, left: 10, right: 10, bottom: 20),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
