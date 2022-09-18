@@ -130,6 +130,7 @@ class NewPaymentPc extends StatelessWidget {
                                     period: controller.warranties[index].days_valid.toString(),
                                     desc: ""),
                                 onTap: (){
+                                  print('tapped');
                                   warrantyController.selectWarranty(controller.warranties[index].warranty_id);
                                 },
                               ),

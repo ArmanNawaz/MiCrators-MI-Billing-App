@@ -51,9 +51,10 @@ class WarrantyCard extends StatelessWidget {
       padding: const EdgeInsets.only(top: 20.0, left: 30),
       child: GestureDetector(
         onTap: () {
-          if(warrantyController.warrantySelected.value == id){
-            // TODO: change color to selected
-          }
+          warrantyController.selectWarranty(int.parse(id));
+          // if(warrantyController.warrantySelected.value == id){
+          //   // TODO: change color to selected
+          // }
         },
         child: Container(
           height: 200,

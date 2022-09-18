@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/customer_controller.dart';
 import 'package:mi_crators/screens/components/checkout_pc.dart';
+import 'package:mi_crators/screens/dashboard.dart';
 
 import '../../controller/cart_controller.dart';
 
@@ -18,12 +19,39 @@ class CheckoutPhone extends StatelessWidget {
 
   List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
 
+  showAlertDialog(BuildContext context, String message, void Function() onPressed) {
+
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: onPressed,
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Response"),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   DropDownController controller = DropDownController();
   final TextEditingController phoneNo = TextEditingController();
   final TextEditingController  email = TextEditingController();
   final TextEditingController name = TextEditingController();
   final TextEditingController address = TextEditingController();
   final CustomerController customerController = Get.find();
+  final CartController cartController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +228,19 @@ class CheckoutPhone extends StatelessWidget {
               width: size.width / 2,
               height: 45,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async{
+                  if(await cartController.sendCartPayment(customerController.phoneNo.value) == false){
+                  showAlertDialog(context, 'Unsuccessful', () {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
+                  });
+                  }else{
+                  showAlertDialog(context, 'Successful', () {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: ((context) => DashBoard())), (route) => false);
+                  });
+                  }
+
+
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.black,
