@@ -6,7 +6,9 @@ String backendUrlMobile = 'http://10.0.2.2:3000/';
 String backendUrlPc = 'http://127.0.0.1:3000/';
 String local_data = 'local_data';
 String prevTransactions = 'prevTransactions';
-String stockBox = 'stockBox';
+String succesfulTransactions = 'succesfulTransactions';
+String unsuccessfulTransactions = 'unsuccessfulTransactions';
+String stock = 'stockBox';
 String operatorControllerTag = 'operatorControllerTag';
 
 

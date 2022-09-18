@@ -8,7 +8,7 @@ import 'dart:io' show Platform;
 
 class StockModel extends GetxController{
 
-  Future<List> getStock() async{
+  Future<Map<String, dynamic>> getStock() async{
 
     // Get all the stock present in the store.
 
@@ -24,9 +24,9 @@ class StockModel extends GetxController{
       }
     }catch(err){
       print(err);
-      return [];
+      return {};
     }
-    return [];
+    return {};
   }
 
 }

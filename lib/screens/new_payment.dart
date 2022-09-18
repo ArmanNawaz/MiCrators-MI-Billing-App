@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/controller/cart_controller.dart';
+import 'package:mi_crators/controller/new_payment_controller.dart';
+import 'package:mi_crators/controller/warranty_controller.dart';
 import 'package:mi_crators/screens/checkout.dart';
 import 'package:mi_crators/screens/components/new_payment_pc.dart';
 import 'package:mi_crators/screens/components/new_payment_phone.dart';
@@ -8,14 +12,19 @@ late Size size;
 late bool? isPc;
 
 class NewPayment extends StatelessWidget {
-  const NewPayment({Key? key}) : super(key: key);
+  final newPaymentController = Get.put(NewPaymentController());
 
+  CartController cartController = Get.find();
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     isPc = size.width > 900;
     return Scaffold(
-        floatingActionButton: const CreateFloatingButton(),
+        floatingActionButton: GetX<CartController>(
+          builder: (controller) {
+            return CreateFloatingButton(controller.total_amount.value.toString());
+          }
+        ),
         floatingActionButtonLocation:
             FloatingActionButtonLocation.miniStartDocked,
         appBar: createAppBar(title: "New Payment", backButton: true),
@@ -23,25 +32,34 @@ class NewPayment extends StatelessWidget {
   }
 }
 
+
 // ignore: must_be_immutable
 class WarrantyCard extends StatelessWidget {
-  WarrantyCard({Key? key, this.type, this.name, this.period, this.desc})
+
+  WarrantyController warrantyController = Get.find();
+
+  WarrantyCard({Key? key,required this.id, this.type, this.name, this.period, this.desc})
       : super(key: key);
   String? type;
   String? name;
   String? period;
   String? desc;
+  String id;
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0, left: 30),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          if(warrantyController.warrantySelected.value == id){
+            // TODO: change color to selected
+          }
+        },
         child: Container(
           height: 200,
           width: 200,
           decoration: BoxDecoration(
-            color: const Color(0xffc7c7c7),
+            color:  Color(0xffc7c7c7),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -94,7 +112,10 @@ class DetailsCard extends StatelessWidget {
 }
 
 class CreateFloatingButton extends StatelessWidget {
-  const CreateFloatingButton({Key? key}) : super(key: key);
+
+  String total_amount;
+
+  CreateFloatingButton(this.total_amount);
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +131,7 @@ class CreateFloatingButton extends StatelessWidget {
         backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child:
-            const Text("Checkout : Rs.20000/-", style: TextStyle(fontSize: 20)),
+            Text("Checkout : Rs.${total_amount}/-", style: TextStyle(fontSize: 20)),
       ),
     );
   }

@@ -8,7 +8,9 @@ void main() async {
   await Hive.initFlutter();
   Hive.openBox(local_data);
   Hive.openBox(prevTransactions);
-  await Hive.openLazyBox(stockBox);
+  Hive.openBox(unsuccessfulTransactions);
+  Hive.openBox(succesfulTransactions);
+  await Hive.openLazyBox(stock);
   runApp(const MyApp());
 }
 

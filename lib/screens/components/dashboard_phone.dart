@@ -1,15 +1,17 @@
 import 'dart:math';
-
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import '../../constants.dart';
+import '../../controller/previoud_search_controller.dart';
 import 'dashboard_pc.dart';
 
 class DashPhone extends StatelessWidget {
 
   final String name, paymentsAuthorised;
 
-  const DashPhone(this.name, this.paymentsAuthorised);
+  DashPhone(this.name, this.paymentsAuthorised);
+
+  final getTransactionsController = Get.put(PreviousSearchController());
 
   @override
   Widget build(BuildContext context) {
@@ -107,14 +109,19 @@ class DashPhone extends StatelessWidget {
         ),
         SizedBox(
           height: size.width,
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: 20,
-            itemBuilder: (BuildContext context, int ind) => RecentCustomerCard(
-              ind: ind + 1,
+          child: GetX<PreviousSearchController>(
+              builder: (prevController){
+                return ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: prevController.previoudPayments.value.length,
+                  itemBuilder: (BuildContext context, int index) =>
+                  RecentCustomerCard(
+                    ind: prevController.previoudPayments.value[index].customerId as int,
+                  ),
+                );
+              },
             ),
-          ),
-        )
+        ),
       ],
     );
   }
