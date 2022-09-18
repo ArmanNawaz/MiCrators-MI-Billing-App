@@ -29,6 +29,10 @@ Before we run the application, please make sure you hae the following installed:
 
 Once You have them downloaded We can proceed further:
 
+<p align="center">
+  <img src="/documentation Images/clone_repo.gif" />
+</p>
+
 1. Clone this repo with the `git clone https://github.com/ArmanNawaz/BTAttendance` in terminal/cmd/bash.
 2. Start the MySQL Command Line Client
 2. Open MySQL Terminal and login.
