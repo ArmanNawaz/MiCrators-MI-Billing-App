@@ -33,7 +33,7 @@ Once You have them downloaded We can proceed further:
 2. Start the MySQL Command Line Client
 2. Open MySQL Terminal and login.
 3. Open MySQL Workbench and connect to MySQL.
-4. Open the database.sql from the cloned folder and copy and paste the whole thing in the text area of your workbench.
+4. Open the database.sql from the cloned folder and copy and paste the whole thing in the text area of your workbench. Run by pressing the Lightning icon above.
 5. Open terminal and enter the cloned repo by executing `cd MiCrators-MI-Billing-App` from the folder where you have cloned.
 6. Now from there go to the backend by executing `cd backend`.
 7. Run the backedn with the command `node index.js` or `npm start`.
