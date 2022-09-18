@@ -1,12 +1,12 @@
 class TransactionTab{
 
   String transactionId;
-  String customerId;
-  String cost;
+  int customerId;
+  int cost;
   String transactionTime;
   String cus_name;
 
-  TransactionTab(this.transactionId, this.cus_name, this.customerId, this.cost, this.transactionTime);
+  TransactionTab({required this.transactionId, required this.cus_name, required this.customerId, required this.cost, required this.transactionTime});
 
 
 

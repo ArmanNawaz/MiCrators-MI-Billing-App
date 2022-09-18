@@ -12,7 +12,6 @@ class OperatorController extends GetxController{
 
   @override
   void onInit() {
-    // TODO: implement onInit
     loggedIn.value = operatorModel.checkLoggedIn();
   }
 

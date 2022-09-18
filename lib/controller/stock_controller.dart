@@ -10,18 +10,25 @@ class StockController extends GetxController{
 
   @override
   void onInit() async {
-    // TODO: implement onInit
 
     print('Getting stocks');
-    var stocks = await Hive.lazyBox(stockBox);
+    var stocks = await Hive.lazyBox(stock);
+    await stocks.clear();
     retriving.value = true;
-    List stockList = await stockModel.getStock();
+    Map<String, dynamic> stockList = await stockModel.getStock();
+    print('stockList: ');
     print(stockList);
 
-    for(Map<String, dynamic> stock in stockList){
-      stocks.put(stock['serial_no'], stock);
-    }
+    stockList.forEach((key, value) {
+      stocks.put(key, value);
+    });
 
+    // for(Map<String, dynamic> stock in stockList){
+    //   stocks.put(stock['serial_no'], stock);
+    // }
+
+
+    retriving.value = false;
 
     super.onInit();
   }

@@ -1,19 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:hive/hive.dart';
+import 'package:get/get.dart';
+import 'package:mi_crators/controller/previoud_search_controller.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/controller/stock_controller.dart';
 import 'package:mi_crators/screens/new_payment.dart';
+
+import '../../controller/cart_controller.dart';
 
 class DashPC extends StatelessWidget {
 
   final String name, authorisedPayments;
 
   DashPC(this.name, this.authorisedPayments);
+  CartController cartController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-
 
 
     Size size = MediaQuery.of(context).size;
@@ -72,36 +78,59 @@ class DashPC extends StatelessWidget {
                   children: [
                     SizedBox(
                       height: 45,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const NewPayment()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.black,
-                          elevation: 20.0,
-                          shadowColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          side: const BorderSide(
-                            color: Colors.black,
-                            width: 0.6,
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: max(size.width - 700, 200),
-                          child: const Center(
-                            child: Text(
-                              "New Payment",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
+                      child: GetX<StockController>(
+                        builder: (controller) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              cartController.clearCart();
+                              if(controller.retriving == false)
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => NewPayment()));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: controller.retriving.value ? Colors.grey : primaryColor,
+                              foregroundColor: Colors.black,
+                              elevation: 20.0,
+                              shadowColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              side: const BorderSide(
+                                color: Colors.black,
+                                width: 0.6,
+                              ),
                             ),
-                          ),
-                        ),
+                            child: SizedBox(
+                              width: max(size.width - 700, 200),
+                              child: Center(
+                                child:
+                                    (controller.retriving.value) ?
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: const [
+                                            Text(
+                                            "New Payment",
+                                            style:
+                                            TextStyle(color: Colors.white, fontSize: 20),
+                                          ),
+                                          SizedBox(width: 3.0),
+                                          Text('(Loading...)',
+                                          style: TextStyle(color: Colors.white, fontSize: 10.0)
+                                          )
+                                        ]
+                                      )
+                                    :
+                                    const Text(
+                                      "New Payment",
+                                      style:
+                                          TextStyle(color: Colors.white, fontSize: 20),
+                                    ),
+                              ),
+                            ),
+                          );
+                        }
                       ),
                     ),
                     Row(
@@ -165,14 +194,19 @@ class DashPC extends StatelessWidget {
               ),
               SizedBox(
                 height: 240,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 20,
-                  itemBuilder: (BuildContext context, int ind) =>
-                      RecentCustomerCard(
-                    ind: ind + 1,
-                  ),
-                ),
+                child: GetX<PreviousSearchController>(
+                  builder: (prevController){
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: prevController.previoudPayments.value.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          RecentCustomerCard(
+                            ind: prevController.previoudPayments.value[index].customerId as int,
+                          ),
+                    );
+                  },
+                )
+
               ),
             ],
           ),

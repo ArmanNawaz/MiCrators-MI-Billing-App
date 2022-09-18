@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/controller/customer_controller.dart';
 import 'package:mi_crators/screens/components/checkout_pc.dart';
+
+import '../../controller/cart_controller.dart';
 
 class DropDownController extends GetxController {
   final selectedValue = "Pick".obs;
@@ -14,7 +17,13 @@ class CheckoutPhone extends StatelessWidget {
   CheckoutPhone({Key? key}) : super(key: key);
 
   List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
+
   DropDownController controller = DropDownController();
+  final TextEditingController phoneNo = TextEditingController();
+  final TextEditingController  email = TextEditingController();
+  final TextEditingController name = TextEditingController();
+  final TextEditingController address = TextEditingController();
+  final CustomerController customerController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +47,18 @@ class CheckoutPhone extends StatelessWidget {
                       // color: const Color(0xffc7c7c7),
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Column(
-                      children: [
-                        ItemCard(
-                          itemName: "Redmi Note 11 5G",
-                          saleAmount: 25000,
-                          discount: 30000,
-                        ),
-                        ItemCard(
-                          itemName: "Mi Notebook Ultra",
-                          saleAmount: 80000,
-                          discount: 2,
-                        ),
-                      ],
+                    child: GetX<CartController>(
+                        builder: (cartController){
+
+                          List<ItemCard> items= [];
+                          for(var item in cartController.cart){
+                            items.add(ItemCard(itemName: item.name, saleAmount: int.parse(item.cost), discount: 0,));
+                          }
+
+                          return Column(
+                              children: items
+                          );
+                        }
                     ),
                   ),
                 ),
@@ -68,24 +76,41 @@ class CheckoutPhone extends StatelessWidget {
                   color: const Color(0xffc7c7c7),
                   borderRadius: BorderRadius.circular(15),
                 ),
+
+                // Enter Customer Details Here
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomerCard(
+                      onChanged: (text) async {
+                        if(text.length==10){
+                          await customerController.getCustomer(phoneNo.text);
+                          name.text = customerController.name.value;
+                          email.text = customerController.email.value;
+                          address.text = customerController.address.value;
+                        }
+                      },
+                      controller: phoneNo,
                       title: "Phone Number",
                       keyboardType: TextInputType.phone,
                       enableFields: true,
                     ),
                     CustomerCard(
+                      onChanged: (text){},
+                      controller: name,
                       title: "Name",
                       keyboardType: TextInputType.text,
-                      enableFields: verified,
+                      enableFields: true,
                     ),
                     CustomerCard(
+                      onChanged: (_){},
+                      controller: email,
                       title: "Email",
                       keyboardType: TextInputType.emailAddress,
-                      enableFields: verified,
+                      enableFields: true,
                     ),
+
+
                     Padding(
                       padding: const EdgeInsets.only(
                           left: 20.0, right: 25, top: 10, bottom: 10),
@@ -126,6 +151,8 @@ class CheckoutPhone extends StatelessWidget {
                     ),
                     controller.selectedValue.value == deliveryModes[1]
                         ? CustomerCard(
+                            onChanged: (_){},
+                            controller: address,
                             title: "Address",
                             keyboardType: TextInputType.text,
                             enableFields: true,
@@ -201,11 +228,12 @@ class CheckoutPhone extends StatelessWidget {
 }
 
 class CustomerCard extends StatelessWidget {
-  CustomerCard({Key? key, this.title, this.keyboardType, this.enableFields})
-      : super(key: key);
+  CustomerCard({required this.onChanged, required this.controller, this.title, this.keyboardType, this.enableFields});
   String? title;
   TextInputType? keyboardType;
   bool? enableFields;
+  final TextEditingController controller;
+  void Function(String text) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +248,8 @@ class CustomerCard extends StatelessWidget {
           SizedBox(
             // width: max(size.width - 250, 200),
             child: TextField(
-              onChanged: (value) {},
+              onChanged: onChanged,
+              controller: controller,
               keyboardType: keyboardType,
               enabled: enableFields,
               decoration: InputDecoration(

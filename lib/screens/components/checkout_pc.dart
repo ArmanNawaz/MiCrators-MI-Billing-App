@@ -1,22 +1,24 @@
 // ignore_for_file: must_be_immutable
+import 'package:get/get.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
+import 'package:mi_crators/controller/cart_controller.dart';
+
+import '../../controller/customer_controller.dart';
+import 'checkout_phone.dart';
 
 bool verified = false;
-
-class DropDownController extends GetxController {
-  final selectedValue = "Pick".obs;
-  changeSelected(String value) => selectedValue.value = value;
-}
 
 class CheckoutPC extends StatelessWidget {
   CheckoutPC({Key? key}) : super(key: key);
 
-  List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
-  DropDownController controller = DropDownController();
+  final TextEditingController phoneNo = TextEditingController();
+  final TextEditingController  email = TextEditingController();
+  final TextEditingController name = TextEditingController();
+  final TextEditingController address = TextEditingController();
+  final CustomerController customerController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -41,33 +43,25 @@ class CheckoutPC extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 20.0),
                         child: Container(
-                          height: 250,
+                          // height: 20,
                           width: size.width / 2 - 100,
                           decoration: BoxDecoration(
                             // color: const Color(0xffc7c7c7),
                             borderRadius: BorderRadius.circular(15),
                           ),
 
-                          // TODO: ADD CONTROLLER FOR CART
+                          child: GetX<CartController>(
+                            builder: (cartController){
 
-                          child: ListView(
-                            children: [
-                              ItemCard(
-                                itemName: "Redmi Note 11 5G",
-                                saleAmount: 25000,
-                                discount: 30000,
-                              ),
-                              ItemCard(
-                                itemName: "Mi Notebook Ultra",
-                                saleAmount: 80000,
-                                discount: 2,
-                              ),
-                              ItemCard(
-                                itemName: "Mi Notebook Ultra",
-                                saleAmount: 80000,
-                                discount: 2,
-                              ),
-                            ],
+                              List<ItemCard> items= [];
+                              for(var item in cartController.cart){
+                                items.add(ItemCard(itemName: item.name, saleAmount: int.parse(item.cost), discount: 0,));
+                              }
+
+                              return Column(
+                                children: items
+                              );
+                            }
                           ),
                         ),
                       ),
@@ -116,81 +110,45 @@ class CheckoutPC extends StatelessWidget {
               ],
             ),
           ),
-          Obx(
-            () => Padding(
-              padding: const EdgeInsets.all(20),
-              child: Container(
-                height: controller.selectedValue.value == deliveryModes[0]
-                    ? 350
-                    : 430,
-                decoration: BoxDecoration(
-                  color: const Color(0xffc7c7c7),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  children: [
-                    CustomerCard(
-                      title: "Phone Number",
-                      keyboardType: TextInputType.phone,
-                      enableFields: true,
-                    ),
-                    CustomerCard(
-                      title: "Name",
-                      keyboardType: TextInputType.text,
-                      enableFields: verified,
-                    ),
-                    CustomerCard(
-                      title: "Email",
-                      keyboardType: TextInputType.emailAddress,
-                      enableFields: verified,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20.0, right: 25, top: 10, bottom: 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: DropdownButton<String>(
-                          value: controller.selectedValue.value,
-                          isExpanded: true,
-                          icon: const Icon(Icons.expand_more),
-                          iconSize: 40,
-                          underline: const SizedBox(height: 0, width: 0),
-                          elevation: 16,
-                          dropdownColor: Colors.white,
-                          onChanged: (String? newValue) {
-                            controller.changeSelected(newValue!);
-                          },
-                          items: deliveryModes
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Text(
-                                  value,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                    controller.selectedValue.value == deliveryModes[1]
-                        ? CustomerCard(
-                            title: "Address",
-                            keyboardType: TextInputType.text,
-                            enableFields: true,
-                          )
-                        : const SizedBox(height: 0, width: 0),
-                  ],
-                ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              height: 270,
+              decoration: BoxDecoration(
+                color: const Color(0xffc7c7c7),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                children: [
+                  CustomerCard(
+                    onChanged: (text) async {
+                      if(text.length==10){
+                        await customerController.getCustomer(phoneNo.text);
+                        name.text = customerController.name.value;
+                        email.text = customerController.email.value;
+                        address.text = customerController.address.value;
+                      }
+                    },
+                    controller: phoneNo,
+                    title: "Phone Number",
+                    keyboardType: TextInputType.phone,
+                    enableFields: true,
+                  ),
+                  CustomerCard(
+                    onChanged: (text){},
+                    controller: name,
+                    title: "Name",
+                    keyboardType: TextInputType.text,
+                    enableFields: true,
+                  ),
+                  CustomerCard(
+                    onChanged: (_){},
+                    controller: email,
+                    title: "Email",
+                    keyboardType: TextInputType.emailAddress,
+                    enableFields: true,
+                  ),
+                ],
               ),
             ),
           ),
@@ -226,48 +184,48 @@ class CheckoutPC extends StatelessWidget {
     );
   }
 }
-
-class CustomerCard extends StatelessWidget {
-  CustomerCard({Key? key, this.title, this.keyboardType, this.enableFields})
-      : super(key: key);
-  String? title;
-  TextInputType? keyboardType;
-  bool? enableFields;
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("$title :  ", style: const TextStyle(fontSize: 20)),
-          SizedBox(
-            width: max(size.width - 250, 200),
-            child: TextField(
-              onChanged: (value) {},
-              keyboardType: keyboardType,
-              enabled: enableFields,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: primaryColor),
-                    borderRadius: BorderRadius.circular(15)),
-                focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue)),
-                labelText: title!,
-                labelStyle: const TextStyle(color: Colors.grey),
-                hintText: 'Enter $title',
-                hintStyle: const TextStyle(color: Colors.grey),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//
+// class CustomerCard extends StatelessWidget {
+//   CustomerCard({Key? key, this.title, this.keyboardType, this.enableFields})
+//       : super(key: key);
+//   String? title;
+//   TextInputType? keyboardType;
+//   bool? enableFields;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     Size size = MediaQuery.of(context).size;
+//     return Padding(
+//       padding: const EdgeInsets.all(20),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           Text("$title :  ", style: const TextStyle(fontSize: 20)),
+//           SizedBox(
+//             width: max(size.width - 250, 200),
+//             child: TextField(
+//               onChanged: (value) {},
+//               keyboardType: keyboardType,
+//               enabled: enableFields,
+//               decoration: InputDecoration(
+//                 enabledBorder: OutlineInputBorder(
+//                     borderSide: BorderSide(color: primaryColor),
+//                     borderRadius: BorderRadius.circular(15)),
+//                 focusedBorder: const OutlineInputBorder(
+//                     borderSide: BorderSide(color: Colors.blue)),
+//                 labelText: title!,
+//                 labelStyle: const TextStyle(color: Colors.grey),
+//                 hintText: 'Enter $title',
+//                 hintStyle: const TextStyle(color: Colors.grey),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class ItemCard extends StatelessWidget {
   ItemCard({Key? key, this.itemName, this.saleAmount, this.discount})
