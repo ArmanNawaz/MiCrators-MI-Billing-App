@@ -4,11 +4,19 @@ import 'package:get/get.dart';
 import 'package:mi_crators/constants.dart';
 import 'package:mi_crators/controller/cart_controller.dart';
 import 'package:mi_crators/screens/dashboard.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../controller/customer_controller.dart';
 import 'checkout_phone.dart';
 
 bool verified = false;
+
+class PaymentController extends GetxController {
+  final paymentMethod = "None".obs;
+  updatePaymentMethod(String value) {
+    paymentMethod.value = value;
+  }
+}
 
 class DropDownController extends GetxController {
   final selectedValue = "Pick".obs;
@@ -17,8 +25,12 @@ class DropDownController extends GetxController {
 
 class CheckoutPC extends StatelessWidget {
   CheckoutPC({Key? key}) : super(key: key);
+
   List<String> deliveryModes = <String>["Pick", "Home-Delivery"];
   DropDownController controller = DropDownController();
+
+  PaymentController paymentController = PaymentController();
+
   final TextEditingController phoneNo = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController name = TextEditingController();
@@ -127,23 +139,35 @@ class CheckoutPC extends StatelessWidget {
                             style: TextStyle(fontSize: 20),
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            CreatePaymentButtons(
-                              title: "Cash",
-                              onTap: () {},
-                            ),
-                            CreatePaymentButtons(
-                              title: "UPI",
-                              onTap: () {},
-                            ),
-                            CreatePaymentButtons(
-                              title: "Card",
-                              onTap: () {},
-                            )
-                          ],
-                        )
+                        Obx(() => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                CreatePaymentButtons(
+                                  title: "Offline",
+                                  onTap: () {
+                                    paymentController
+                                        .updatePaymentMethod("Offline");
+                                  },
+                                  color:
+                                      paymentController.paymentMethod.value ==
+                                              "Offline"
+                                          ? primaryColor
+                                          : Colors.white,
+                                ),
+                                CreatePaymentButtons(
+                                  title: "Online",
+                                  onTap: () {
+                                    paymentController
+                                        .updatePaymentMethod("Online");
+                                  },
+                                  color:
+                                      paymentController.paymentMethod.value ==
+                                              "Online"
+                                          ? primaryColor
+                                          : Colors.white,
+                                ),
+                              ],
+                            ))
                       ],
                     ),
                   ),
@@ -249,44 +273,69 @@ class CheckoutPC extends StatelessWidget {
             child: SizedBox(
               width: size.width / 2,
               height: 45,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (await cartController
-                          .sendCartPayment(customerController.phoneNo.value) ==
-                      false) {
-                    showAlertDialog(context, 'Unsuccessful', () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => DashBoard())),
-                          (route) => false);
-                    });
-                  } else {
-                    showAlertDialog(context, 'Successful', () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => DashBoard())),
-                          (route) => false);
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.black,
-                  elevation: 20.0,
-                  shadowColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: () async {
+                    if (paymentController.paymentMethod.value == "None") {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Payment Method Error"),
+                              content: const Text("Select a payment method"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("OK"),
+                                )
+                              ],
+                            );
+                          });
+                    } else if (paymentController.paymentMethod.value ==
+                        "Online") {
+                      final Uri uri = Uri.parse("https://www.google.com/");
+                      launchUrl(uri);
+                    } else if (await cartController.sendCartPayment(
+                            customerController.phoneNo.value) ==
+                        false) {
+                      showAlertDialog(context, 'Unsuccessful', () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => DashBoard())),
+                            (route) => false);
+                      });
+                    } else {
+                      showAlertDialog(context, 'Successful', () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => DashBoard())),
+                            (route) => false);
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.black,
+                    elevation: 20.0,
+                    shadowColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.black,
+                      width: 0.6,
+                    ),
                   ),
-                  side: const BorderSide(
-                    color: Colors.black,
-                    width: 0.6,
+                  child: Text(
+                    paymentController.paymentMethod.value == "Online"
+                        ? "Pay Online"
+                        : "Confirm Payment",
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
                   ),
-                ),
-                child: const Text(
-                  "Confirm Payment",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
             ),
@@ -379,9 +428,10 @@ class ItemCard extends StatelessWidget {
 }
 
 class CreatePaymentButtons extends StatelessWidget {
-  CreatePaymentButtons({Key? key, required this.onTap, this.title})
+  CreatePaymentButtons({Key? key, required this.onTap, this.title, this.color})
       : super(key: key);
   String? title;
+  Color? color;
 
   void Function() onTap;
 
@@ -394,7 +444,7 @@ class CreatePaymentButtons extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor: color!,
           foregroundColor: Colors.black,
           elevation: 10.0,
           shadowColor: Colors.black,
@@ -407,8 +457,8 @@ class CreatePaymentButtons extends StatelessWidget {
           ),
         ),
         child: SizedBox(
-          width: size.width * 0.07,
-          height: size.width * 0.07,
+          width: 80,
+          height: 80,
           child: Center(
             child: Text(
               title!,

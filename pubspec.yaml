@@ -15,10 +15,11 @@ dependencies:
   get: ^4.6.5
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  http:
+  http: ^0.13.5
   flutter_barcode_scanner: ^2.0.0
   code_scan: ^0.4.2
   camera_windows: ^0.2.1+1
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:

@@ -172,13 +172,33 @@ class NewPaymentPhone extends StatelessWidget {
                               .warrantySelected.value
                               .toString();
                           String name = details1['product_name'];
-                          cartController.addInCart(BillItemModel(
-                              serial_no: serialNo,
-                              data: DateTime.now().toString(),
-                              cost: cost,
-                              warranty_id: warranty,
-                              name: name));
-                          newPaymentController.reset();
+                          if (int.parse(warranty) == 0) {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Select Warranty"),
+                                    content: const Text(
+                                        "Please select a warranty first"),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text("OK"),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      )
+                                    ],
+                                  );
+                                });
+                          } else {
+                            cartController.addInCart(BillItemModel(
+                                serial_no: serialNo,
+                                data: DateTime.now().toString(),
+                                cost: cost,
+                                warranty_id: warranty,
+                                name: name));
+                            newPaymentController.reset();
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
