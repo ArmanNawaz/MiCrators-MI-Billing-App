@@ -41,13 +41,30 @@ Once You have them downloaded We can proceed further:
   <img height="400" src="/documentation Images/mysql_workbench_1.png" />
 </p>  
 
-5. Open the database.sql (inside the backend folder) from the cloned folder and copy and paste the whole thing in the text area of your workbench. Run by pressing the Lightning icon above.
-6. Open terminal and enter the cloned repo by executing `cd MiCrators-MI-Billing-App` from the folder where you have cloned.
-7. Now from there go to the backend by executing `cd backend` in the terminal.
+4. Open the database.sql (inside the backend folder) from the cloned folder and copy and paste the whole thing in the text area of your workbench. Run by pressing the Lightning icon above.
+
+<p align="center">
+  <img height="400" src="/documentation Images/mysql_workbench_2.png" />
+</p>  
+
+5. Open terminal and enter the cloned repo by executing `cd MiCrators-MI-Billing-App` from the folder where you have cloned.
+6. Now from there go to the backend by executing `cd backend` in the terminal.
+7. Run `npm install`
 8. Run the backedn with the command `node index.js` or `npm start` in the terminal.
 9. Open project in Android Studio.
-10. Run get dependencies.
-11. Select the platform and run the application.
+10. Run get dependencies.  
+
+<p align="center">
+  <img height="400" src="/documentation Images/get_dependencies.png" />
+</p>  
+
+11. Select the platform and run the application.  
+
+Emulator can be downloaded from:
+<p align="center">
+  <img height="400" src="/documentation Images/install_emulator.gif" />
+</p>
+
 
 # Using the application 
 
